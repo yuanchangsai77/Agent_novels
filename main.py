@@ -23,11 +23,16 @@ class NovelGenerator:
            return f.read()
 
    def generate_chapter(self, chapter_num, regenerate=False):
-       agent = ChapterAgent('novel_outline.txt')
-       agent.run(chapter_num)
-       
-       with open(f'{self.chapters_dir}/chapter_{chapter_num:03d}.txt', 'r', encoding='utf-8') as f:
-           chapter_text = f.read()
+       chapter_path = f'{self.chapters_dir}/chapter_{chapter_num:03d}.txt'
+       if not regenerate and os.path.exists(chapter_path):
+           with open(chapter_path, 'r', encoding='utf-8') as f:
+               chapter_text = f.read()
+       else:
+           agent = ChapterAgent('novel_outline.txt')
+           agent.run(chapter_num)
+
+           with open(chapter_path, 'r', encoding='utf-8') as f:
+               chapter_text = f.read()
            
        memory_agent = MemoryAgent()
        memory_agent.run(chapter_text, chapter_num)
